@@ -1,31 +1,41 @@
-# A Simple To-Do List (Java)
+```mermaid
+classDiagram
+    class App {
+        + main(args: String[]): void
+    }
 
-You can find the instructions for this lab [here](https://morethanequations.com/Computer-Science/Labs/A-Simple-To-Do-List). Create a new repository on GitHub to house your code. Be sure to make the repository public so that I can view and grade it.
+    class Task {
+        - description: String
+        - tags: Set<String>
+        - isComplete: boolean
+        - static tasks: List<Task>
+        + Task(description: String, tags: Set<String>)
+        + static addTask(task: Task): boolean
+        + static addTask(description: String, tags: Set<String>): boolean
+        + static completeTask(description: String): boolean
+        + isComplete(): boolean
+        + setComplete(complete: boolean): void
+        + hasTag(tag: String): boolean
+        + getDescription(): String
+        + getTags(): Set<String>
+        + static getAllTasks(): List<Task>
+        + static getCompletedTasks(): List<Task>
+        + static getIncompleteTasks(): List<Task>
+        + static getTasksByTag(tag: String): List<Task>
+        + static clearTasks(): void
+    }
 
-We will use [Gradle](https://gradle.org/) to automate common development tasks.
+    class TaskListTest {
+        + setup(): void
+        + testAddTask(): void
+        + testRejectBlankTask(): void
+        + testRejectDuplicateTask(): void
+        + testCompleteTask(): void
+        + testGetCompletedTasks(): void
+        + testGetIncompleteTasks(): void
+        + testGetTasksByTag(): void
+    }
 
-## Building the App
-
-You can build the app using:
-
-```bash
-./gradlew build
+    App --> Task : uses
+    TaskListTest --> Task : tests
 ```
-
-## Testing the App
-
-You can run the automated suite of tests using:
-
-```bash
-./gradlew test
-```
-
-## Running the App
-
-You can run the app using:
-
-```bash
-./gradlew run --quiet --console=plain
-```
-
-The two flags passed to the `run` command hide the noisy output from Gradle. You can see the details from Gradle by omitting those flags.
