@@ -1,16 +1,13 @@
 package org.example;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Task {
     private String description;
     private Set<String> tags;
     private boolean isComplete;
 
-    private static List<Task> tasks = new ArrayList<>();
+    private static final List<Task> tasks = new ArrayList<>();
 
     public Task(String description, Set<String> tags) {
         this.description = description != null ? description.trim() : "";
@@ -18,34 +15,12 @@ public class Task {
         this.isComplete = false;
     }
 
-    // Add a Task object to the task list if valid and not duplicate
-    public static boolean addTask(Task task) {
-        if (task.description.isEmpty()) {
-            return false;  // Reject blank task
-        }
-        for (Task t : tasks) {
-            if (t.description.equals(task.description) && !t.isComplete) {
-                return false; // Reject duplicate incomplete task
-            }
-        }
-        tasks.add(task);
-        return true;
+    public String getDescription() {
+        return description;
     }
 
-    // Overloaded helper method to add a task by description and tags (for easier calls)
-    public static boolean addTask(String description, Set<String> tags) {
-        return addTask(new Task(description, tags));
-    }
-
-    // Find a task by description and mark complete
-    public static boolean completeTask(String description) {
-        for (Task t : tasks) {
-            if (t.description.equals(description)) {
-                t.isComplete = true;
-                return true;
-            }
-        }
-        return false;
+    public Set<String> getTags() {
+        return new HashSet<>(tags);
     }
 
     public boolean isComplete() {
@@ -60,15 +35,38 @@ public class Task {
         return tags.contains(tag);
     }
 
-    public String getDescription() {
-        return description;
+    public static boolean addTask(Task task) {
+        if (task.description.isEmpty()) {
+            System.out.println("❌ Cannot add a blank task.");
+            return false;
+        }
+
+        for (Task t : tasks) {
+            if (t.description.equalsIgnoreCase(task.description) && !t.isComplete) {
+                System.out.println("❌ Duplicate incomplete task rejected: " + task.description);
+                return false;
+            }
+        }
+
+        tasks.add(task);
+        return true;
     }
 
-    public Set<String> getTags() {
-        return new HashSet<>(tags);
+    public static boolean addTask(String description, Set<String> tags) {
+        return addTask(new Task(description, tags));
     }
 
-    // Getters for filtered tasks
+    public static boolean completeTask(String description) {
+        for (Task t : tasks) {
+            if (t.description.equalsIgnoreCase(description)) {
+                t.setComplete(true);
+                return true;
+            }
+        }
+        System.out.println("⚠️ Task not found: " + description);
+        return false;
+    }
+
     public static List<Task> getAllTasks() {
         return new ArrayList<>(tasks);
     }
@@ -94,17 +92,17 @@ public class Task {
     }
 
     public static List<Task> getTasksByTag(String tag) {
-        List<Task> taggedTasks = new ArrayList<>();
+        List<Task> tagged = new ArrayList<>();
         for (Task t : tasks) {
             if (t.hasTag(tag)) {
-                taggedTasks.add(t);
+                tagged.add(t);
             }
         }
-        return taggedTasks;
+        return tagged;
     }
 
-    // Clear all tasks (useful for testing)
     public static void clearTasks() {
         tasks.clear();
+        System.out.println("✅ All tasks cleared.");
     }
 }

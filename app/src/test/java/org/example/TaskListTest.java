@@ -11,62 +11,68 @@ public class TaskListTest {
 
     @BeforeEach
     public void setup() {
-        // Clear tasks before each test
         Task.clearTasks();
     }
 
     @Test
-    public void testAddTask() {
-        assertTrue(Task.addTask(new Task("Test task", Set.of("unit"))));
+    public void testAddValidTask() {
+        assertTrue(Task.addTask("Learn Java", Set.of("education")));
     }
 
     @Test
     public void testRejectBlankTask() {
-        assertFalse(Task.addTask(new Task("", null)));
+        assertFalse(Task.addTask("", Set.of("misc")));
     }
 
     @Test
-    public void testRejectDuplicateTask() {
-        Task.addTask(new Task("Test task", Set.of("unit")));
-        assertFalse(Task.addTask(new Task("Test task", Set.of("unit"))));
+    public void testRejectDuplicateIncompleteTask() {
+        Task.addTask("Duplicate Task", Set.of("work"));
+        assertFalse(Task.addTask("Duplicate Task", Set.of("work")));
+    }
+
+    @Test
+    public void testAllowDuplicateIfPreviousComplete() {
+        Task.addTask("Done Task", Set.of("work"));
+        Task.completeTask("Done Task");
+        assertTrue(Task.addTask("Done Task", Set.of("work")));
     }
 
     @Test
     public void testCompleteTask() {
-        Task t = new Task("Complete me", null);
-        Task.addTask(t);
-        t.setComplete(true);
-        assertTrue(t.isComplete());
+        Task.addTask("Finish test", null);
+        assertTrue(Task.completeTask("Finish test"));
+    }
+
+    @Test
+    public void testCompleteNonExistentTask() {
+        assertFalse(Task.completeTask("Ghost Task"));
     }
 
     @Test
     public void testGetCompletedTasks() {
-        Task t1 = new Task("Done", null);
-        t1.setComplete(true);
-        Task t2 = new Task("Not done", null);
-        Task.addTask(t1);
-        Task.addTask(t2);
+        Task.addTask("Done", null);
+        Task.completeTask("Done");
         assertEquals(1, Task.getCompletedTasks().size());
     }
 
     @Test
     public void testGetIncompleteTasks() {
-        Task t1 = new Task("Done", null);
-        t1.setComplete(true);
-        Task t2 = new Task("Not done", null);
-        Task.addTask(t1);
-        Task.addTask(t2);
+        Task.addTask("Pending", null);
         assertEquals(1, Task.getIncompleteTasks().size());
     }
 
     @Test
     public void testGetTasksByTag() {
-        Task t1 = new Task("Task1", Set.of("work"));
-        Task t2 = new Task("Task2", Set.of("home"));
-        Task.addTask(t1);
-        Task.addTask(t2);
-        assertEquals(1, Task.getTasksByTag("work").size());
+        Task.addTask("Clean room", Set.of("home"));
+        Task.addTask("Write blog", Set.of("writing"));
         assertEquals(1, Task.getTasksByTag("home").size());
-        assertEquals(0, Task.getTasksByTag("nonexistent").size());
+        assertEquals(0, Task.getTasksByTag("fitness").size());
+    }
+
+    @Test
+    public void testClearTasks() {
+        Task.addTask("Task1", null);
+        Task.clearTasks();
+        assertTrue(Task.getAllTasks().isEmpty());
     }
 }
